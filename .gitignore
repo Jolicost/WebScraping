@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Misc files
+dataset*/
+geckodriver.txt
+config.yaml
+*.exe

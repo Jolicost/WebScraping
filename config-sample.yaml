@@ -1,0 +1,13 @@
+browser: firefox
+movies:
+  - title: Titanic
+    year: 1997
+  - title: Gladiator
+    year: 
+reviews:
+  sort_by: helpfulness
+  sort_order: asc
+  max_reviews: 100
+debug:
+  status: 0
+  mode: reviews
