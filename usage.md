@@ -38,8 +38,16 @@ Un cop copiat, ja es pot executar el programa (main.py). Les claus de configurac
   * status: 1|0 segons si el mode de depuració és activat o no.
   * mode: mode de depuració seleccionat. Sols té sentit si la clau anterior és 1. Pot prendre els valors:
     * reviews: depuració de l'obtenció de les crítiques d'una pel·lícula.
-	
 ## Natejar la sortida de dades
 Cada vegada que es realitza una execució, es crea un directori a l'estil de dataset_timestamp" amb el resultat de l'execució.
 
 Per a eliminar tots els directoris d'aquest tipus es pot executar el fitxer Python **purgeOutput.py**
+
+## Execució de l'aplicació
+Un cop es compleixin els següents requisits:
+
+1. Existeix el driver de selenium al directori d'execució. Es disposa del navegador web corresponent.
+2. S'han instal·lat les dependències amb pip.
+3. Existeix el fitxer de configuració config.yaml ben formatejat en el directori d'execució.
+
+Llavors es pot executar l'aplicació amb "python ./main.py" des d'un terminal.
