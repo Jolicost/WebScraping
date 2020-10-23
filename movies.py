@@ -9,6 +9,7 @@ def getResultMoviePattern(title, year):
     Otherwise it will only match the title
     e.g. Titanic (1997) would match with title=titanic and optionally year=1997
     '''
+    print(title)
     regex = None
     if (year != None):
         regex = re.compile(r"^\s*{0}.*\({1}\).*$".format(title,year), flags = re.IGNORECASE)
@@ -47,6 +48,9 @@ def searchTitlesIds(driver, movies):
     ids = []
     for movie in movies:
         movieId = searchTitleId(driver, movie)
-        ids = ids + [movieId]
-        print("Scrapped movie: {0}. Year specified: {1}. The movie id from imdb is: {2}".format(movie['title'],movie['year'],movieId))
+        if (movieId):
+            ids = ids + [movieId]
+            print("Scraped movie: {0}. Year specified: {1}. The movie id from imdb is: {2}".format(movie['title'],movie['year'],movieId))
+        else:
+            print("Failed to retrieve movieId from movie name: {0}. Year specified: {1}".format(movie['title'],movie['year']))
     return ids

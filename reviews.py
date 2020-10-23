@@ -1,6 +1,6 @@
 
 
-def getReviewUrl(moviedId):
+def getReviewUrl(movieId):
     '''
     Returns the review page URL from a movie id
     '''
