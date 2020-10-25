@@ -13,6 +13,7 @@ En aquesta pràctica, es simula que som una productora audiovisual de pel·lícu
 
 IMDB proporciona molta informació valuosa a més de la bàsica sobre la pel·lícula (títol, duració, pressupost...). Els propis usuaris de la web són els encarregats de proporcionar gran part del contingut a través de valoracions i crítiques. Aquesta informació té un valor molt gran per a l'anàlisi, i per tant és un dels objectius principals d'aquest projecte.
 
+Prova commit
 
 
 
