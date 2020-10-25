@@ -73,6 +73,23 @@ def createOutputfolder():
     os.mkdir(folder)
     return folder
 
+def getMetadata():
+    '''
+    Gets the metadata of an execution
+    '''
+    now = datetime.now()
+    dt_string = now.strftime("%Y/%m/%d %H:%M:%S")
+    
+    metadata = {
+        'date': dt_string,
+        'sort_by':config['reviews']['sort_by'],
+        'sort_order':config['reviews']['sort_order'],
+        'max_reviews':config['reviews']['max_reviews']
+    }
+    
+    return metadata
+    
+    
    
 def scrapFullMovie():
     '''
@@ -97,6 +114,7 @@ def scrapFullMovie():
     writeDictionary(folder, 'reviews.csv', reviews)
     writeDictionary(folder, 'movies.csv', movies)
     writeDictionary(folder, 'genres.csv', genres)
+    writeDictionary(folder, 'metadata.csv', [getMetadata()])
     
     driver.close()
     
