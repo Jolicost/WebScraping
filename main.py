@@ -78,7 +78,7 @@ def getMetadata():
     Gets the metadata of an execution
     '''
     now = datetime.now()
-    dt_string = now.strftime("%Y/%m/%d %H:%M:%S")
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
     
     metadata = {
         'date': dt_string,
