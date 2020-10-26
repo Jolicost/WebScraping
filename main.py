@@ -49,7 +49,7 @@ def writeDictionary(folder, filename, dictionary):
         print("No elements to write")
         return
     
-    with open(os.path.join(folder, filename),'w',newline='') as csvfile:
+    with open(os.path.join(folder, filename),'w',newline='', encoding='utf-8') as csvfile:
         writer = csv.DictWriter(csvfile, dictionary[0].keys(), delimiter=";")
         writer.writeheader()
         writer.writerows(dictionary)
@@ -122,8 +122,9 @@ def debug_scrapReview():
     '''
     Debug function for scraping the reviews of a movie
     '''
-    # Gladiator
+    # Titanic
     ids = ['tt0172495']
+    #ids = ['tt10394844']
     driver = loadSeleniumDriver()
     reviewOptions = config['reviews']
     reviews = getMoviesReviews(driver, ids, reviewOptions)

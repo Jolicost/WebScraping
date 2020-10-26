@@ -1,4 +1,4 @@
-
+import re
 
 def internal_find_element_by_xpath(driver, xpath):
     '''
@@ -25,3 +25,16 @@ def getMovieUrl(movieId):
     Formats the movie identification inside the url that retrives the main page of the movie
     '''
     return "https://www.imdb.com/title/{0}/".format(movieId)
+    
+def obtainSingleElementFromText(driver, xpath, regex):
+    '''
+    Retrives the element text and applies a regex pattern with only 1 group
+    If the element is not found or the patter does not match None is returned
+    '''
+    element = internal_find_element_by_xpath(driver, xpath)
+    if (element):
+        matches = re.search(regex, element.text)
+        if (matches):
+            return matches.group(1)
+    
+    return None

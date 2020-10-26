@@ -2,19 +2,8 @@ import re
 from utils import internal_find_element_by_xpath
 from utils import internal_find_element_by_xpath_text
 from utils import getMovieUrl
+from utils import obtainSingleElementFromText
 
-def obtainSingleElementFromText(driver, xpath, regex):
-    '''
-    Retrives the element text and applies a regex pattern with only 1 group
-    If the element is not found or the patter does not match None is returned
-    '''
-    element = internal_find_element_by_xpath(driver, xpath)
-    if (element):
-        matches = re.search(regex, element.text)
-        if (matches):
-            return matches.group(1)
-    
-    return None
 
 def obtainMoneyAmountFromElementText(driver, xpath):
     '''

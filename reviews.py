@@ -1,23 +1,86 @@
 from time import sleep
 import random
-from selenium.webdriver.common.keys import Keys
 import re
+from datetime import datetime
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from utils import internal_find_element_by_xpath
+from utils import obtainSingleElementFromText
+from selenium.webdriver.support.select import Select
 
-def getReviewUrl(movieId):
+def getSortValueByOption(sortType):
     '''
-    Returns the review page URL from a movie id
+    Returns the sort type as a query parameter from the configuration sort type
     '''
-    return "https://www.imdb.com/title/{0}/reviews".format(movieId)
+    if (sortType == 'helpfulness'):
+        return 'helpfulnessScore'
+    elif (sortType == 'date'):
+        return 'submissionDate'
+    elif (sortType == 'votes'):
+        return 'totalVotes'
+    elif (sortType == 'prolific'):
+        return 'reviewVolume'
+    elif (sortType == 'rating'):
+        return 'userRating'
+    return None
+
+def getReviewUrl(movieId, sortType, sortOrder):
+    '''
+    Returns the review page URL from a movie id and the sort options
+    '''
+    return "https://www.imdb.com/title/{0}/reviews?sort={1}&dir={2}".format(movieId, getSortValueByOption(sortType), sortOrder)
 
 def getSortType(reviewOptions):
+    '''
+    Gets the sort type from the configuration
+    '''
     return reviewOptions['sort_by']
     
 def getSortOrder(reviewOptions):
+    '''
+    Gets the sort order from the configuration
+    '''
     return reviewOptions['sort_order']
 
 def getMaxReviews(reviewOptions):
+    '''
+    Gets the max number of reviews to process per movie from the configuration
+    '''
     return reviewOptions['max_reviews']
+    
+def getReviewFullXpath(pos, innerXPath):
+    '''
+    Gets the review XPath from the root element of the review webpage
+    Each review is contained inside an imdb-user-review class div. 
+    The position argument is used to determine which concrete review must be retrieved.
+    The innerXPath parameter is concatenated to the review query in order to access the specific element inside the review
+    '''
+    fullXPath = '(//div[contains(@class,"imdb-user-review")])[position()={0}]{1}'.format(pos, innerXPath)
+    return fullXPath
+    
+def getReviewAtPos(driver, pos, innerXPath):
+    '''
+    Gets the element inside the review container.
+    The exact review is determined by the pos parameter
+    The innerXPath parameter determines which element inside the review container must be retrieved
+    '''
+    return internal_find_element_by_xpath(driver, getReviewFullXpath(pos, innerXPath))
+    
+def getReviewTextAtPos(driver, pos, innerXPath):
+    '''
+    Obtains the text for an element inside a review container
+    '''
+    return getReviewAtPos(driver, pos, innerXPath).text
 
+def getNumberReviewsLoaded(driver):
+    '''
+    Fetches the number of reviews currently loaded within the page
+    '''
+    return len(driver.find_elements_by_xpath('//div[contains(@class,"imdb-user-review")]'))
+    
+   
 def getReviews(driver, movieId, reviewOptions):
     '''
     Scraps the reviews from the given movie (movieId)
@@ -26,134 +89,79 @@ def getReviews(driver, movieId, reviewOptions):
     sortOrder = getSortOrder(reviewOptions)
     maxReviews = getMaxReviews(reviewOptions)
 
-    review_page = getReviewUrl(movieId)
-    driver.get(review_page)
+    
+    review_page = getReviewUrl(movieId, sortType, sortOrder)
+    print("Opening page: {0}".format(review_page))
+    driver.get(review_page)    
     
     reviews_ret = []
-    # TODO Scrap the content of the website and return a list of dictionaries with the same structure as getReviewsStub
-    #Comptem el número d'elements de la pàgina:
-    reviews = driver.find_elements_by_xpath('//div[contains(@class,"imdb-user-review")]')
-    print (len(reviews))
-    max = maxReviews
-    print (max)
-    while len(reviews) < max:
-        boto = driver.find_element_by_xpath('//button[@id="load-more-trigger"]')
-        try:
-            boto.click()
-            sleep(random.uniform(8.0,10.0))
-            reviews = driver.find_elements_by_xpath('//div[contains(@class,"imdb-user-review")]')
-        except:
-            break
-   
-    recorregut = 1
-    for i in range(max):
-        rating = None
-        rating_ok = None
-        try:
-            rating = driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//div[contains(@class, "ratings")]'.format(i+1)).text
-            match = re.search(r'(\d+)/10', rating)
-            if (match):
-                rating_ok = match.group(1)
-        except Exception as e:
-            pass
-        print(rating_ok)
-        #print(rating)
+    
+    # Load pages until the number of elements is enough
+    print("Determining if multiple pages must be loaded")
+    boto = internal_find_element_by_xpath(driver, '//button[@id="load-more-trigger"]')
+    
+    while boto != None and boto.is_displayed() and getNumberReviewsLoaded(driver) < maxReviews:
+        print("Needs more reviews. Attempting to load more reviews")
+        boto.click()
+        element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,'//div[@class="lister"]//div[contains(@class,"ipl-load-more--loaded")]')))
+        print("Load button clicked. Determining if more pages must be loaded...")
+        boto = internal_find_element_by_xpath(driver, '//button[@id="load-more-trigger"]')
+     
+    # The pages are loaded. Determine the number of reviews to process.
+    # If number of loaded reviews < max specified number then we proceed with the whole set of page reviews
+    # Else the max specified number of reviews is used
+    nReviewsToProecess = min(getNumberReviewsLoaded(driver), maxReviews) 
+    
+    print("All pages loaded. Attempting to scrap a total of {0} reviews".format(nReviewsToProecess))
+    # Fetch every review
+    for i in range(nReviewsToProecess):
+        pos = i+1
+        # Review rating
+        rating = obtainSingleElementFromText(driver, getReviewFullXpath(pos, '//div[contains(@class, "ratings")]'), r'(\d+)/10')
         
-        titulo = driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//a[@class="title"]'.format(i+1)).text
-        print(titulo)
+        # Review title
+        title = getReviewTextAtPos(driver, pos, '//a[@class="title"]')
         
-        username= driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//span[@class="display-name-link"]'.format(i+1)).text
-        print(username)
+        # Review username
+        username = getReviewTextAtPos(driver, pos, '//span[@class="display-name-link"]')
         
-        date = driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//span[@class="review-date"]'.format(i+1)).text
-        print(date)
-        pos_1 = date.index(' ')
-        dia=date[0:pos_1]
-        mesos = 1
-        mes="/00/"
-        while mesos < 13:
-            if "January" in date:
-                mes="/01/"
-                break
-            elif "February" in date:
-                mes="/02/"
-                break
-            elif "March" in date:
-                mes="/03/"
-                break
-            elif "April" in date:
-                mes="/04/"
-                break
-            elif "May" in date:
-                mes="/05/"
-                break
-            elif "June" in date:
-                mes="/06/"
-                break
-            elif "July" in date:
-                mes="/07/"
-                break
-            elif "August" in date:
-                mes="/08/"
-                break
-            elif "September" in date:
-                mes="/09/"
-                break
-            elif "October" in date:
-                mes="/10/"
-                break
-            elif "November" in date:
-                mes="/11/"
-                break
-            elif "December" in date:
-                mes="/12/"
-                break
-            else:
-                mesos = mesos + 1
-        any=date[-4:]
-        data = dia + mes + any
-        print(data)
-        
-        comentari = driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//div[contains(@class, "show-more")]'.format(i+1)).text
-        comentari = re.sub(r'\s+',' ', comentari)
-        print(comentari)
-        
-        helpful = driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//div[contains(@class, "actions")]'.format(i+1)).text
-        match = re.search(r'(\d+) out of (\d+) found this helpful\.', helpful)
+        # Review date
+        date_text = getReviewTextAtPos(driver, pos, '//span[@class="review-date"]')
+        date = None
+        if (date_text):
+            date = datetime.strptime(date_text, '%d %B %Y').strftime("%d/%m/%Y")
+            
+        # Review helpful
+        helpful = getReviewTextAtPos(driver, pos, '//div[contains(@class, "actions")]')
+        match = re.search(r'^([\d\.]+) out of ([\d\.]+) found this helpful\.', helpful)
         helpfulYes = None
         helpfulTotal = None
         if (match):
-            helpfulYes = match.group(1)
-            helpfulTotal = match.group(2)
-        print(helpfulYes, helpfulTotal)
+            helpfulYes = match.group(1).replace(".","")
+            helpfulTotal = match.group(2).replace(".","")
 
-        isSpoiler = False
-        try:
-            spoiler= driver.find_element_by_xpath('(//div[contains(@class,"imdb-user-review")])[position()={0}]//span[(@class="spoiler-warning")]'.format(i+1)).text
-            isSpoiler = True
-        except Exception as e:
-            pass
-        print(isSpoiler)
-        
-        recorregut = recorregut + 1
-        print(recorregut)
-        if len(reviews) < max:
-            max = len(reviews)
-            print(max)
-    #test mode 2 per guardar csv
+        # Review is spoiler
+        isSpoiler = getReviewAtPos(driver, pos, '//span[(@class="spoiler-warning")]') != None
     
+        # Review comment
+        comment_element = getReviewAtPos(driver, pos, '//div[@class="content"]//div[contains(@class,"text show-more__control")]')
+        comment = None
+        if (comment_element):
+            comment = re.sub(r'\s+',' ', comment_element.get_attribute('innerHTML'))        
+        
         reviews_ret = reviews_ret + [{
             'movieId': movieId,
             'username':username,
-            'date':data,
-            'review_title':titulo,
-            'rating':rating_ok,
-            'text':comentari,
+            'date':date,
+            'review_title':title,
+            'rating':rating,
+            'text':comment,
             'helpfulYes':helpfulYes,
             'helpfulTotal':helpfulTotal,
             'isSpoiler': isSpoiler
         }]
-    # END
+        
+        print("Scraped review number: {0} for titleId: {1}. Review title: {2}".format(pos, movieId, title))
     return reviews_ret
 
 def getReviewsStub(driver, movieId, reviewOptions):
@@ -186,14 +194,22 @@ def getReviewsStub(driver, movieId, reviewOptions):
     ]
     
 def getMoviesReviewsStub(driver, moviesIds, reviewOptions):
+    '''
+    STUB function
+    '''
     reviews = []
     for movieId in moviesIds:
         reviews = reviews + getReviewsStub(driver, movieId, reviewOptions)
     return reviews
 
 def getMoviesReviews(driver, moviesIds, reviewOptions):
+    '''
+    Obtains the reviews that matches the options from a list of movies
+    '''
     reviews = []
     for movieId in moviesIds:
+        print("Starting to scrap reviews for titleId: {0}".format(movieId))
         reviews = reviews + getReviews(driver, movieId, reviewOptions)
+        print("Ended scraping reviews for titleId: {0}".format(movieId))
     return reviews
     
