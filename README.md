@@ -26,7 +26,14 @@ Els fitxers que composen el repositori són els següents:
 * README.md: Aquest mateix fitxer de descripció.
 * usage.md: Descripció dels requeriments i de com iniciar l'aplicació.
 
+## Agraïments i llicència
+Les dades que es pugin extreure amb l'ús de l'eina d'aquest repositori sols es poden utilitzar amb finalitats acadèmiques i sempre citant a IMBD com a autor original d'aquestes. No es permet cap ús comercial no autoritzat de les dades que es pugin extreure amb l'ús d'aquesta eina.
 
+Així mateix, IMDB és l'autor original de les dades que es pugin extreure.
+
+Agraïm a IMDB la seva cortesía per a la cesió de les dades, que sols disposen de finalitats acadèmiques.
+
+Les dades que es puguin extreure amb aquest projecte es troben subjectes a la llicènia CC BY-NC-SA 4.0. 
 
 
 

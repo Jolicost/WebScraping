@@ -1,6 +1,9 @@
 from selenium.webdriver.common.keys import Keys
 import time
 import re
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
 
 def getResultMoviePattern(title, year):
     '''
@@ -17,6 +20,7 @@ def getResultMoviePattern(title, year):
         regex = re.compile(r"^\s*{0}.*\(\d+\).*$".format(title), flags = re.IGNORECASE)
     return regex
 
+# DEPRECATED
 def searchTitleId(driver, movie):
     '''
     Obtains the title id from the given movie object
@@ -41,13 +45,62 @@ def searchTitleId(driver, movie):
                 break
     return title_id
 
+# DEPRECATED
 def searchTitlesIds(driver, movies):
     '''
-    Obtains the title id's from imdb given a list of movies {title, year (optional)
+    Obtains the title id's from imdb given a list of movies {title, year (optional))
     '''
     ids = []
     for movie in movies:
         movieId = searchTitleId(driver, movie)
+        if (movieId):
+            ids = ids + [movieId]
+            print("Scraped movie: {0}. Year specified: {1}. The movie id from imdb is: {2}".format(movie['title'],movie['year'],movieId))
+        else:
+            print("Failed to retrieve movieId from movie name: {0}. Year specified: {1}".format(movie['title'],movie['year']))
+    return ids
+   
+def searchTitleIdWithoutFind(driver, search_bar, movie):
+    '''
+    Obtains a movie from the search bar without accessing /find
+    '''
+    # Clear the bar and input the movie title
+    search_bar.clear()
+    search_bar.send_keys(movie['title'])
+
+    # Wait until the bar is loaded with the movies
+    element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH,"//ul[contains(@class,'anim-enter-done')]")))
+    nMovies = len(element.find_elements_by_xpath("//li//div[@class='sc-ifAKCX KERZh']"))
+    title_id = None
+    # Iterate through each element of the results list which is a movie (not a video)
+    for i in range(nMovies):
+        pos = i + 1
+        # Obtain the movie title and year from the divs inside the item
+        movieTitle = element.find_element_by_xpath("((//li//div[@class='sc-ifAKCX KERZh'])[position()={0}]//div)[position()=1]".format(pos)).text
+        movieYear = element.find_element_by_xpath("((//li//div[@class='sc-ifAKCX KERZh'])[position()={0}]//div)[position()=2]".format(pos)).text
+        
+        # Check if the given title is contained inside the item movie title
+        if movie['title'].strip().lower() in movieTitle.strip().lower():
+            # If the year is specified, check if it matches
+            if movie['year'] == None or (movie['year'] and  movieYear.strip() == str(movie['year'])):
+                # The year matches or the year is not specified, retrieve the url from the a tag in order to extract the movie identification
+                url = element.find_element_by_xpath("((//li//div[@class='sc-ifAKCX KERZh'])[position()={0}])/ancestor::a[1]".format(pos))
+                url_match = re.search(r'^.*\/title\/(.+)\?.*$', url.get_attribute("href"))
+                if (url_match):
+                    # Return the title id and stop searching for it on the first coincidence
+                    title_id = url_match.group(1)
+                    break
+    return title_id 
+    
+def searchTitlesIdsWithoutFind(driver, movies):
+    '''
+    Obtains the title id's from imdb given a list of movies {title, year (optional)) Without accessing /find
+    '''
+    driver.get("https://www.imdb.com")
+    search_bar = driver.find_element_by_xpath("//input[@id='suggestion-search']")
+    ids = []
+    for movie in movies:
+        movieId = searchTitleIdWithoutFind(driver, search_bar, movie)
         if (movieId):
             ids = ids + [movieId]
             print("Scraped movie: {0}. Year specified: {1}. The movie id from imdb is: {2}".format(movie['title'],movie['year'],movieId))

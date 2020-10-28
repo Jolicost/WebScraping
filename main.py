@@ -1,5 +1,6 @@
 from selenium import webdriver
 from movies import searchTitlesIds
+from movies import searchTitlesIdsWithoutFind
 from reviews import getMoviesReviewsStub
 from reviews import getMoviesReviews
 from movie import getMoviesInfo
@@ -102,7 +103,7 @@ def scrapFullMovie():
     '''
     movies = loadMovies()
     driver = loadSeleniumDriver()
-    ids = searchTitlesIds(driver, movies)
+    ids = searchTitlesIdsWithoutFind(driver, movies)
     reviewOptions = config['reviews']
     
     reviews = getMoviesReviews(driver, ids, reviewOptions)
@@ -155,7 +156,13 @@ def debug_scrapGenres():
     folder = createOutputfolder()
     writeDictionary(folder, 'genres.csv', genres)
     driver.close()
-    
+   
+def debug_scrapIds():
+    driver = loadSeleniumDriver()
+    movies = loadMovies()
+    ids = searchTitlesIdsWithoutFind(driver, movies)
+    print(ids)
+   
 if __name__ == '__main__':
     debug_mode = getDebugMode()
     if (debug_mode == None):
@@ -166,4 +173,6 @@ if __name__ == '__main__':
         debug_scrapMovie()
     elif (debug_mode == 'genres'):
         debug_scrapGenres()
+    elif (debug_mode == 'search'):
+        debug_scrapIds()
     
