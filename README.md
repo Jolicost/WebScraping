@@ -36,5 +36,8 @@ Agraïm a IMDB la seva cortesía per a la cesió de les dades, que sols disposen
 Les dades que es puguin extreure amb aquest projecte es troben subjectes a la llicènia CC BY-NC-SA 4.0. 
 
 
+## Data DOI
+[![DOI](https://zenodo.org/badge/302570674.svg)](https://zenodo.org/badge/latestdoi/302570674)
+
 
 
