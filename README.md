@@ -37,7 +37,7 @@ Les dades que es puguin extreure amb aquest projecte es troben subjectes a la ll
 
 
 ## Data DOI
-[![DOI](https://zenodo.org/badge/302570674.svg)](https://zenodo.org/badge/latestdoi/302570674)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4155443.svg)](https://doi.org/10.5281/zenodo.4155443)
 
 
 
