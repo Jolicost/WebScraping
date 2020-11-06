@@ -19,7 +19,7 @@ Els fitxers que composen el repositori són els següents:
 * main.py: Punt d'entrada de l'aplicatiu. Llegeix els paràmetres d'entrada a partir de la configuració i invoca la lógica del scraper per tal d'escriure les dades en els fitxers de sortida.
 * movies.py: Mòdul encarregat de cercar els identificadors de les pel·lícules a partir d'un títol i d'un any de llançament.
 * movie.py: Mòdul encarregat de llegir les dades bàsiques de les pel·lícules.
-* reviews.py: Módul encarregat d'obtenir la llista de crítiques de les pel·lícules.
+* reviews.py: Mòdul encarregat d'obtenir la llista de crítiques de les pel·lícules.
 * utils.py: Utilitats comuns de tots els móduls.
 * copyConfig.py: Copia el fitxer config-sample.py cap al fitxer de producció config.py, que no és seguit pel repositori de codi.
 * purgeOutput.py: Esborra els directoris de sortida de les execucions. 
