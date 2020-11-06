@@ -1,18 +1,18 @@
 # Instal·lació i ús de l'aplicació
 Per tal de poder llençar l'aplicació, es requereixen els següents components:
 
-* Python > 3(es recomanda la versió 3.7)
+* Python > 3 (es recomanda la versió 3.7)
 * Pip (gestor de llibereríes). S'inclou dins de Python.
-* Webdriver de Chrome/Firefox per a Selenium (explicat més endevant).
-* Altres llibreríes (explicat més endevant).
+* Webdriver de Chrome/Firefox per a Selenium (explicat més endavant).
+* Altres llibreries (explicat més endavant).
 
 ## Instal·lació de llibreríes amb pip
-Per a instal·lar les llibreríes necessaries per a executar els scripts, es pot optar per executar la comanda
+Per a instal·lar les llibreries necessàries per a executar els scripts, es pot optar per executar la comanda
 
 pip install -r requierements.txt
 
 ## Webdriver de Selenium
-El webdriver de Selenium permet que la liberería interaccioni amb el navegador. El reposiori suporta Chrome i Firefox, però requereix **disposar del driver (.exe) situat en la mateixa carpeta que la pràctica**.
+El webdriver de Selenium permet que la libereria interaccioni amb el navegador. El repositori suporta Chrome i Firefox, però requereix **disposar del driver (.exe) situat en la mateixa carpeta que la pràctica**.
 
 Per a descarregar el driver adequat, es pot consultar el següent [enllaç](https://www.selenium.dev/downloads/#browsersExpand)
 
@@ -38,7 +38,7 @@ Un cop copiat, ja es pot executar el programa (main.py). Les claus de configurac
   * status: 1|0 segons si el mode de depuració és activat o no.
   * mode: mode de depuració seleccionat. Sols té sentit si la clau anterior és 1. Pot prendre els valors:
     * reviews: depuració de l'obtenció de les crítiques d'una pel·lícula.
-## Natejar la sortida de dades
+## Netejar la sortida de dades
 Cada vegada que es realitza una execució, es crea un directori a l'estil de dataset_timestamp" amb el resultat de l'execució.
 
 Per a eliminar tots els directoris d'aquest tipus es pot executar el fitxer Python **purgeOutput.py**
