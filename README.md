@@ -26,6 +26,8 @@ Els fitxers que composen el repositori són els següents:
 * purgeOutput.py: Esborra els directoris de sortida de les execucions. 
 * README.md: Aquest mateix fitxer de descripció.
 * usage.md: Descripció dels requeriments i de com iniciar l'aplicació.
+* requeriments.txt: Conté les llibreries a instal·lar. 
+
 
 ## Agraïments i llicència
 Les dades que es pugin extreure amb l'ús de l'eina d'aquest repositori sols es poden utilitzar amb finalitats acadèmiques i sempre citant a IMBD com a autor original d'aquestes. No es permet cap ús comercial no autoritzat de les dades que es pugin extreure amb l'ús d'aquesta eina.
