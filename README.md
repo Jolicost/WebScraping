@@ -16,6 +16,7 @@ Per a executar el programa, si us plau feu-li una ullada al fitxer [Usage](usage
 ## Descripció dels fitxers
 Els fitxers que composen el repositori són els següents:
 
+* M2.951_20201_Practica1_ACB_JOC.pdf, document amb totes les respostes de la pràctica 1: Web Scraping.
 * main.py: Punt d'entrada de l'aplicatiu. Llegeix els paràmetres d'entrada a partir de la configuració i invoca la lógica del scraper per tal d'escriure les dades en els fitxers de sortida.
 * movies.py: Mòdul encarregat de cercar els identificadors de les pel·lícules a partir d'un títol i d'un any de llançament.
 * movie.py: Mòdul encarregat de llegir les dades bàsiques de les pel·lícules.
